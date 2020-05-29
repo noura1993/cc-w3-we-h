@@ -11,6 +11,18 @@ class Film
         @price = options['price'].to_i
     end
 
+    def customers()
+        sql = "
+        SELECT customers.* 
+        FROM customers 
+        INNER JOIN tickets 
+        ON customers.id = tickets.customer_id 
+        WHERE film_id = $1;"
+        values = [@id]
+        customers_records = SqlRunner.run(sql, values)
+        return Customer.map(customers_records)
+    end
+
     def save()
         sql = "INSERT INTO films (title, price) VALUES ($1, $2) RETURNING id;"
         values = [@title, @price]
@@ -37,9 +49,9 @@ class Film
     def self.find(id)
         sql = 'SELECT * FROM films WHERE id = $1;'
         values = [id]
-        film_hash = SqlRunner.run(sql, values).first()
-        return nil if film_hash == nil
-        return Film.new(film_hash)
+        film_record= SqlRunner.run(sql, values).first()
+        return nil if film_record == nil
+        return Film.new(film_record)
     end
 
     def self.map(film_data)

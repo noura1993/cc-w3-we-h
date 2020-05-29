@@ -37,9 +37,9 @@ class Ticket
     def self.find(id)
         sql = 'SELECT * FROM tickets WHERE id = $1;'
         values = [id]
-        ticket_hash = SqlRunner.run(sql, values).first()
-        return nil if ticket_hash == nil
-        return Ticket.new(ticket_hash)
+        ticket_record = SqlRunner.run(sql, values).first()
+        return nil if ticket_record == nil
+        return Ticket.new(ticket_record)
     end
 
     def self.map(ticket_data)
