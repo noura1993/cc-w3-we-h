@@ -11,6 +11,17 @@ class Customer
         @funds = options['funds'].to_i
     end
 
+    def buy_ticket(film)
+        return if @funds < film.price
+        @funds -= film.price
+        update()
+        Ticket.new({'customer_id' => @id, 'film_id' => film.id}).save()
+    end
+
+    def tickets_count()
+        return films().count()
+    end
+
     def films()
         sql = "
         SELECT films.* 
@@ -41,6 +52,10 @@ class Customer
         SqlRunner.run(sql, values)
     end
 
+    def ==(other)
+        self.name == other.name && self.funds == other.funds
+    end
+
     def self.delete_all()
         sql = "DELETE FROM customers;"
         SqlRunner.run(sql)
@@ -55,11 +70,11 @@ class Customer
     end
 
     def self.map(customer_data)
-        return customer_data.map{ |customer| Customer.new(customer)}
+        return customer_data.map{ |customer| Customer.new(customer) }
     end
 
     def self.all()
-        sql = "SELECT * FROM customers "
+        sql = "SELECT * FROM customers;"
         customers = SqlRunner.run(sql)
         return Customer.map(customers)
     end

@@ -11,6 +11,10 @@ class Film
         @price = options['price'].to_i
     end
 
+    def customers_count()
+        return customers().count()
+    end
+
     def customers()
         sql = "
         SELECT customers.* 
@@ -41,6 +45,10 @@ class Film
         SqlRunner.run(sql, values)
     end
 
+    def ==(other)
+        self.title == other.title && self.price == other.price
+    end
+
     def self.delete_all()
         sql = "DELETE FROM films;"
         SqlRunner.run(sql)
@@ -55,11 +63,11 @@ class Film
     end
 
     def self.map(film_data)
-        return film_data.map{ |film| Film.new(film)}
+        return film_data.map{ |film| Film.new(film) }
     end
 
     def self.all()
-        sql = "SELECT * FROM films "
+        sql = "SELECT * FROM films;"
         films = SqlRunner.run(sql)
         return Film.map(films)
     end

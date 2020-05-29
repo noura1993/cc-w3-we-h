@@ -43,13 +43,13 @@ class Ticket
     end
 
     def self.map(ticket_data)
-        return ticket_data.map{ |ticket| Ticket.new(ticket)}
+        return ticket_data.map{ |ticket| Ticket.new(ticket) } 
     end
 
     def self.all()
-        sql = "SELECT * FROM tickets "
+        sql = "SELECT * FROM tickets;"
         tickets = SqlRunner.run(sql)
-        return tickets.map{ |ticket| Ticket.new(ticket)}
+        return Ticket.map(tickets)
     end
 
 end
