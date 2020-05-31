@@ -49,7 +49,7 @@ class Film
             end
         end
         return nil if show_time_tickets.empty?
-        return show_time_tickets.max_by{|k,v| v}.first()['show_time']
+        return show_time_tickets.sort_by{|k,v| v}.first()['show_time']
     end
 
     def save()
