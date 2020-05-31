@@ -1,4 +1,5 @@
 require_relative('../db/sql_runner')
+require_relative('./film')
 
 class Customer 
 
@@ -11,11 +12,13 @@ class Customer
         @funds = options['funds'].to_i
     end
 
-    def buy_ticket(film)
+    def buy_ticket(screening)
+        film = Film.find(screening.film_id)
         return if @funds < film.price
         @funds -= film.price
         update()
-        Ticket.new({'customer_id' => @id, 'film_id' => film.id}).save()
+        new_ticket = Ticket.new({'customer_id' => @id, 'screening_id' => screening.id})
+        new_ticket.save()
     end
 
     def tickets_count()
@@ -23,11 +26,12 @@ class Customer
     end
 
     def films()
-        sql = "
-        SELECT films.* 
-        FROM films 
+        sql = "SELECT films.* 
+        FROM films
+        INNER JOIN screenings
+        ON films.id = screenings.film_id
         INNER JOIN tickets 
-        ON films.id = tickets.film_id 
+        ON screenings.id = tickets.screening_id
         WHERE customer_id = $1;"
         values = [@id]
         films_records = SqlRunner.run(sql, values)

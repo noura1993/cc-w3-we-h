@@ -3,12 +3,14 @@ require('minitest/reporters')
 require_relative('../models/customer')
 require_relative('../models/film')
 require_relative('../models/ticket')
+require_relative('../models/screening')
 
 Minitest::Reporters.use! Minitest::Reporters::SpecReporter.new
 
 class CustomerTest < MiniTest::Test
 
     def setup()
+        Screening.delete_all()
         Customer.delete_all()
         Film.delete_all()
         Ticket.delete_all()
@@ -19,7 +21,10 @@ class CustomerTest < MiniTest::Test
         @film = Film.new({ 'title' => 'ONWARD', 'price' => 10 })
         @film.save()
 
-        @ticket = Ticket.new({ 'customer_id' => @customer.id, 'film_id' => @film.id })
+        @screening = Screening.new({ 'name' => 'Onward @ 10', 'show_time' => '10:00', 'capacity' => 50, 'film_id' => @film.id })
+        @screening.save()
+
+        @ticket = Ticket.new({ 'customer_id' => @customer.id, 'screening_id' => @screening.id })
         @ticket.save()
     end
 
@@ -35,7 +40,7 @@ class CustomerTest < MiniTest::Test
     end
 
     def test_buy_ticket()
-        @customer.buy_ticket(Film.find(@film.id))
+        @customer.buy_ticket(Screening.find(@screening.id))
         customer = Customer.find(@customer.id)
         assert_equal(25, customer.funds)
         assert_equal(2, customer.tickets_count())
@@ -44,7 +49,7 @@ class CustomerTest < MiniTest::Test
     def test_buy_ticket__insufficient_funds()
         @customer.funds = 5
         @customer.update()
-        @customer.buy_ticket(Film.find(@film.id))
+        @customer.buy_ticket(Screening.find(@screening.id))
         customer = Customer.find(@customer.id)
         assert_equal(5, customer.funds)
         assert_equal(1, customer.tickets_count())
