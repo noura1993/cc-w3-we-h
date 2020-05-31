@@ -26,7 +26,14 @@ class Film
         WHERE film_id = $1;"
         values = [@id]
         customers_records = SqlRunner.run(sql, values)
-        return Customer.map(customers_records)
+        customers = Customer.map(customers_records)
+        unique_customers = []
+        customers.each{ |customer| unique_customers.push(customer) if !unique_customers.include?(customer)}
+        return unique_customers
+    end
+
+    def most_popular_time()
+
     end
 
     def save()

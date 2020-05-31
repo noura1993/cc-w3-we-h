@@ -24,13 +24,21 @@ class FilmTest < MiniTest::Test
         @film = Film.new({ 'title' => 'Onward', 'price' => 10 })
         @film.save()
 
-        @screening = Screening.new({ 'name' => 'Onward @ 10', 'show_time' => '10:00', 'capacity' => 50, 'film_id' => @film.id })
-        @screening.save()
+        @screening1 = Screening.new({ 'name' => 'Onward @ 10', 'show_time' => '10:00', 'capacity' => 50, 'film_id' => @film.id })
+        @screening1.save()
+        @screening2 = Screening.new({ 'name' => 'Onward @ 12', 'show_time' => '12:00', 'capacity' => 100, 'film_id' => @film.id })
+        @screening2.save()
+        @screening3 = Screening.new({ 'name' => 'Onward @ 14', 'show_time' => '14:00', 'capacity' => 100, 'film_id' => @film.id })
+        @screening3.save()
 
-        @ticket1 = Ticket.new({ 'customer_id' => @customer1.id, 'screening_id' => @screening.id })
+        @ticket1 = Ticket.new({ 'customer_id' => @customer1.id, 'screening_id' => @screening1.id })
         @ticket1.save()
-        @ticket2 = Ticket.new({ 'customer_id' => @customer2.id, 'screening_id' => @screening.id })
+        @ticket2 = Ticket.new({ 'customer_id' => @customer1.id, 'screening_id' => @screening2.id })
         @ticket2.save()
+        @ticket3 = Ticket.new({ 'customer_id' => @customer2.id, 'screening_id' => @screening2.id })
+        @ticket3.save()
+        @ticket4 = Ticket.new({ 'customer_id' => @customer2.id, 'screening_id' => @screening3.id })
+        @ticket4.save()
     end
 
     def test_CRUD()
@@ -47,6 +55,10 @@ class FilmTest < MiniTest::Test
     def test_customers_count()
         result = Film.find(@film.id).customers_count()
         assert_equal(2, result)
+    end
+
+    def test_most_popular_time()
+        result = @film.most_popular_time()
     end
 
 end
