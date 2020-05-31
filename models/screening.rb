@@ -36,6 +36,12 @@ class Screening
         self.capacity == other.capacity && self.film_id == other.film_id
     end
 
+    def self.increase_screening_capacity(screening_id)
+        screening = Screening.find(screening_id) 
+        screening.capacity += 1
+        screening.update()
+    end
+
     def self.delete_all()
         sql = "DELETE FROM screenings;"
         SqlRunner.run(sql)

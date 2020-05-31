@@ -1,9 +1,10 @@
 require_relative('../db/sql_runner')
+require_relative('./screening')
 
 class Ticket     
 
     attr_reader :id
-    attr_accessor :customer_id, :film_id
+    attr_accessor :customer_id, :screening_id
 
     def initialize(options)
         @id = options['id'].to_i if options['id']
@@ -15,23 +16,26 @@ class Ticket
         sql = "INSERT INTO tickets (customer_id, screening_id) VALUES ($1, $2) RETURNING id;"
         values = [@customer_id, @screening_id]
         @id = SqlRunner.run(sql, values)[0]['id'].to_i
-    end
-
-    def update()
-        sql = "UPDATE tickets SET customer_id = $1, screening_id = $2 WHERE id = $3;"
-        values = [@customer_id, @screening_id, @id]
-        SqlRunner.run(sql, values)
+        screening = Screening.find(@screening_id)
+        screening.capacity -= 1
+        screening.update()
     end
 
     def delete()
         sql = "DELETE FROM tickets WHERE id = $1;"
         values = [@id]
         SqlRunner.run(sql, values)
+        Screening.increase_screening_capacity(@screening_id)   
+    end
+
+    def ==(other)
+        self.customer_id == other.customer_id && self.screening_id == other.screening_id
     end
 
     def self.delete_all()
-        sql = "DELETE FROM tickets;"
-        SqlRunner.run(sql)
+        sql = "DELETE FROM tickets RETURNING screening_id;"
+        screenings_id = SqlRunner.run(sql)
+        screenings_id.each{ |screening_id| Screening.increase_screening_capacity(screening_id) }
     end
 
     def self.find(id)

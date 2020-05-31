@@ -14,6 +14,7 @@ class Customer
 
     def buy_ticket(screening)
         film = Film.find(screening.film_id)
+        return if screening.capacity == 0 
         return if @funds < film.price
         @funds -= film.price
         update()

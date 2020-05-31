@@ -21,7 +21,7 @@ class CustomerTest < MiniTest::Test
         @film = Film.new({ 'title' => 'ONWARD', 'price' => 10 })
         @film.save()
 
-        @screening = Screening.new({ 'name' => 'Onward @ 10', 'show_time' => '10:00', 'capacity' => 50, 'film_id' => @film.id })
+        @screening = Screening.new({ 'name' => 'Onward @ 10', 'show_time' => '10:00', 'capacity' => 2, 'film_id' => @film.id })
         @screening.save()
 
         @ticket = Ticket.new({ 'customer_id' => @customer.id, 'screening_id' => @screening.id })
@@ -40,6 +40,14 @@ class CustomerTest < MiniTest::Test
     end
 
     def test_buy_ticket()
+        @customer.buy_ticket(Screening.find(@screening.id))
+        customer = Customer.find(@customer.id)
+        assert_equal(25, customer.funds)
+        assert_equal(2, customer.tickets_count())
+    end
+
+    def test_buy_ticket__insufficient_capacity()
+        @customer.buy_ticket(Screening.find(@screening.id))
         @customer.buy_ticket(Screening.find(@screening.id))
         customer = Customer.find(@customer.id)
         assert_equal(25, customer.funds)
