@@ -33,7 +33,23 @@ class Film
     end
 
     def most_popular_time()
-
+        sql = "SELECT screenings.show_time
+        FROM tickets
+        INNER JOIN screenings
+        ON tickets.screening_id = screenings.id
+        WHERE film_id = $1;"
+        values = [@id]
+        show_time_records = SqlRunner.run(sql, values)
+        show_time_tickets = Hash.new()
+        show_time_records.each do |show_time_record| 
+            if(!show_time_tickets.include?(show_time_record))
+                show_time_tickets[show_time_record] = 1
+            else
+                show_time_tickets[show_time_record] += 1
+            end
+        end
+        return nil if show_time_tickets.empty?
+        return show_time_tickets.max_by{|k,v| v}.first()['show_time']
     end
 
     def save()

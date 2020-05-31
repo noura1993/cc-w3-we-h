@@ -59,6 +59,7 @@ class FilmTest < MiniTest::Test
 
     def test_most_popular_time()
         result = @film.most_popular_time()
+        assert_equal('12:00', result)
     end
 
 end
